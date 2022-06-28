@@ -7,6 +7,8 @@ from .gsc_inspect_url.inspect_url import start_inspect
 from json import dumps
 from datetime import datetime, timedelta
 from django.urls import resolve
+from django.utils import timezone
+
 
 icea_flow = google_auth_oauthlib.flow.Flow.from_client_config(cred_icea,
             scopes='https://www.googleapis.com/auth/webmasters.readonly')
@@ -18,9 +20,9 @@ normal_redirect_uri = "https://robie-seo.herokuapp.com/inspect-gsc/auth"
 
 def del_old_cred():
     # free heroku server only works when someone is using it, so only then i can delete old files
-    for i in CredentialsModel.objects.all():
-        if i.start_date + timedelta(days=1) < datetime.now():
-            i.delete()
+    for cred in CredentialsModel.objects.all():
+        if cred.start_date + timedelta(days=1) < timezone.now():
+            cred.delete()
 
 
 @shared_task(bind=True)
